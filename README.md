@@ -1,8 +1,8 @@
 # Lamhat - Digital Photo Frame
 
-**Lamhat**: An Arabic word meaning "moments," capturing and displaying your cherished memories.
+_Turn your any digital devices into photo frame._
 
-Turn your any digital devices into photo frame.
+**Lamhat**: An Arabic word meaning "moments," capturing and displaying your cherished memories.
 
 ## Background
 
