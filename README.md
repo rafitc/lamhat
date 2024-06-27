@@ -14,10 +14,14 @@ I have an old iPad Air 1st Gen that is no longer in use due to the lack of softw
 - Fron-end -> Not yet decided. (If you have any suggestion create an issue)
 - DB --> PSQL for data and MinIO for object storage
 
+## System Design 
+
+Read design doc from here [CLICK HERE](docs/README.md)
+
 ## TO DO
 
 - [x] High level system design
-- [ ] Low level system design
+- [x] Low level system design
 - [ ] Database setup
 - [ ] Backend
   - [ ] Auth
