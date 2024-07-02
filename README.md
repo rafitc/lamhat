@@ -1,23 +1,27 @@
 # Lamhat - Digital Photo Frame
 
-_Turn your any digital devices into photo frame._
+_Turn any digital devices into photo frame._
 
 **Lamhat**: An Arabic word meaning "moments," capturing and displaying your cherished memories.
 
 ## Background
 
-I have an old iPad Air 1st Gen that is no longer in use due to the lack of software update support. I want to repurpose this device as a cloud photo frame, allowing for remote management of the photo library.
+I have an old iPad Air 1st Gen that is no longer in use due to the lack of software update support. I want to repurpose this device as a cloud photo frame.
 
 ## Technology
 
-- Backend -> Go lang (Gin framework)
-- Fron-end -> Not yet decided. (If you have any suggestion create an issue)
-- DB --> PSQL for data and MinIO for object storage
+- **Backend:** Go (Gin framework)
+- **Frontend:** Not yet decided (suggestions are welcome - please create an issue)
+- **Database:** PostgreSQL for data and MinIO for object storage
+
+## System Design 
+
+Read design doc from here [CLICK HERE](docs/README.md)
 
 ## TO DO
 
 - [x] High level system design
-- [ ] Low level system design
+- [x] Low level system design
 - [ ] Database setup
 - [ ] Backend
   - [ ] Auth

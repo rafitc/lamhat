@@ -4,8 +4,16 @@ Here you can find all docs, discussions and queries related to Lamhat.
 
 ## System Design
 
-![alt text](files/image.png)
+### High Level
 
-## References
+![alt text](files/high-level-design.png)
 
-- Logging module : https://www.highlight.io/blog/5-best-logging-libraries-for-go
+### Low level design
+
+### DB tables
+
+![alt text](files/table-structure.png)
+
+### API End points
+
+YTD
