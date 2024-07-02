@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+database:
+  HOST: "127.0.0.1"
+  PORT: 5432
+  DATABASE: lamhat
+  USER_NAME: "lamhat_backend"
+  PASSWORD: "sdfghj"
+  SSL_MODE: "disable"
+  CLIENT_CERT: "/log"
+  CLIENT_KEY: "/log"
+  CA_CERT: "/log"
+
+EXAMPLE_VAR: "variable from config.yml"
+EXAMPLE_PATH: "path from config.yml"
