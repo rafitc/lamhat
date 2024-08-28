@@ -12,5 +12,9 @@ database:
   CLIENT_KEY: "/log"
   CA_CERT: "/log"
 
+JWT_AUTH:
+  SALT: "PBb1LA6QHXe="
+  KEY: "PBb1LA6QHXe="
+
 EXAMPLE_VAR: "variable from config.yml"
 EXAMPLE_PATH: "path from config.yml"
