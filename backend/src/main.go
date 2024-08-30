@@ -13,7 +13,7 @@ var sugar = core.Sugar
 
 func main() {
 	sugar.Info("Creating DB pool")
-	repository.DbPo olMain()
+	repository.DbPoolMain()
 
 	getRoutes()
 
