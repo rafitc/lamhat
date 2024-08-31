@@ -32,7 +32,7 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 			return
 		}
 
-		var result model.Response = service.SingUpService(body)
+		var result model.Response = service.SingUpService(ctx, body)
 		ctx.JSON(result.Code, result)
 	})
 }

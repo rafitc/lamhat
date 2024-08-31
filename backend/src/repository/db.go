@@ -10,6 +10,7 @@ import (
 )
 
 var sugar = core.Sugar
+var ConObjOfDB *pgxpool.Pool
 
 func DbPoolMain() {
 	// Create database connection pool
@@ -18,25 +19,26 @@ func DbPoolMain() {
 		sugar.Errorf("Error while creating connection to the database!! %v", err.Error())
 		return // Exit if there's an error
 	}
-	defer connPool.Close()
+	// defer connPool.Close()
 
-	// Acquire a connection from the pool
-	connection, err := connPool.Acquire(context.Background())
-	if err != nil {
-		sugar.Errorf("Error while acquiring connection from the database pool!! %v", err.Error())
-		return // Exit if there's an error
-	}
-	defer connection.Release()
+	// // Acquire a connection from the pool
+	// connection, err := connPool.Acquire(context.Background())
+	// if err != nil {
+	// 	sugar.Errorf("Error while acquiring connection from the database pool!! %v", err.Error())
+	// 	return // Exit if there's an error
+	// }
+	// defer connection.Release()
 
-	// Check the connection by running a simple query
-	var result int
-	err = connection.QueryRow(context.Background(), "SELECT 1").Scan(&result)
-	if err != nil || result != 1 {
-		sugar.Errorf("Could not ping database, error: %v", err)
-		return // Exit if there's an error
-	}
+	// // Check the connection by running a simple query
+	// var result int
+	// err = connection.QueryRow(context.Background(), "SELECT 1").Scan(&result)
+	// if err != nil || result != 1 {
+	// 	sugar.Errorf("Could not ping database, error: %v", err)
+	// 	return // Exit if there's an error
+	// }
 
 	sugar.Info("Connected to the database!!")
+	ConObjOfDB = connPool
 }
 
 func DbConnConfig() *pgxpool.Config {
