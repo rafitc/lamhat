@@ -24,13 +24,14 @@ func SingUpService(ctx *gin.Context, body model.SignupBody) model.Response {
 	}
 	defer connection.Release()
 
-	// Check whether the user exist in DB or not
+	// Get transaction from connection and use it till the end.
+	// If any err, do rollback else do commit
 	tx, err := connection.Begin(ctx)
 	if err != nil {
 		Sugar_logger.Errorf("Error in DB connection %v", err.Error())
 		defer tx.Rollback(ctx)
 	}
-
+	// Check whether the user exist in DB or not
 	response, err := repository.FindUserByEmail(ctx, body.EmailId, tx)
 	if err == customErrors.ErrUserNotFound {
 		// Handle the case where no user is found
