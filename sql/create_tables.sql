@@ -1,26 +1,49 @@
 -- Users Table 
 
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY, -- auto-incrementing primary key
-    user_id UUID DEFAULT gen_random_uuid() UNIQUE, -- unique identifier for user
-    email_id VARCHAR(255) NOT NULL UNIQUE, -- email address, unique and not null
-    is_email_valid BOOLEAN DEFAULT FALSE, -- flag to check if email is valid
-    first_name VARCHAR(100), -- user's first name, now nullable
-    last_name VARCHAR(100), -- user's last name, now nullable
-    auth_key_hash CHAR(64) NOT NULL UNIQUE, -- hashed authentication key, unique and fixed length
-    otp CHAR(6), -- OTP for email verification
-    otp_generated_at TIMESTAMP, -- timestamp of OTP generation
-    is_user_active BOOLEAN DEFAULT TRUE, -- flag to check if user is active
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- timestamp of creation
-    last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- timestamp of last update
+CREATE TABLE app.users (
+	id serial4 NOT NULL,
+	email_id varchar(255) NOT NULL,
+	is_email_valid bool not NULL DEFAULT false,
+	first_name varchar(100) NULL,
+	last_name varchar(100) NULL,
+	auth_key_hash bpchar(64) NULL,
+	otp bpchar(6) NULL,
+	otp_generated_at timestamp NULL,
+	is_user_active bool NULL DEFAULT true,
+	created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+	last_updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT users_auth_key_hash_key UNIQUE (auth_key_hash),
+	CONSTRAINT users_email_id_key UNIQUE (email_id),
+	CONSTRAINT users_pkey PRIMARY KEY (id)
 );
+CREATE INDEX idx_user_id ON app.users USING btree (id);
+CREATE INDEX idx_users_email_id ON app.users USING btree (email_id);
+CREATE INDEX idx_users_is_user_active ON app.users USING btree (is_user_active);
 
--- Indexes for better performance
-CREATE INDEX idx_users_email_id ON users (email_id);
-CREATE INDEX idx_users_is_user_active ON users (is_user_active);
-CREATE INDEX idx_users_created_at ON users (created_at);
-CREATE INDEX idx_users_otp ON users (otp);
-CREATE INDEX idx_users_otp_generated_at ON users (otp_generated_at);
+ALTER TABLE app.users OWNER TO me; -- change owner to superuser
 
-ALTER TABLE users OWNER TO me; -- change owner to superuser
+-- Give access to the backend user 
+-- To all tables
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'app') LOOP
+        EXECUTE 'GRANT ALL PRIVILEGES ON TABLE app.' || quote_ident(r.tablename) || ' TO lamhat_backend_dev;';
+    END LOOP;
+END $$;
+
+-- to all sequences
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT sequencename FROM pg_sequences WHERE schemaname = 'app') LOOP
+        EXECUTE 'GRANT ALL PRIVILEGES ON SEQUENCE app.' || quote_ident(r.sequencename) || ' TO lamhat_backend_dev;';
+    END LOOP;
+END $$;
+
+-- to all future tables 
+ALTER DEFAULT PRIVILEGES IN SCHEMA app GRANT ALL PRIVILEGES ON TABLES TO lamhat_backend_dev;
+ALTER DEFAULT PRIVILEGES IN SCHEMA app GRANT ALL PRIVILEGES ON SEQUENCES TO lamhat_backend_dev;
 

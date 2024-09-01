@@ -16,5 +16,8 @@ JWT_AUTH:
   SALT: "PBb1LA6QHXe="
   KEY: "PBb1LA6QHXe="
 
+OTP:
+  OTP_LENGTH: 6
+
 EXAMPLE_VAR: "variable from config.yml"
 EXAMPLE_PATH: "path from config.yml"
