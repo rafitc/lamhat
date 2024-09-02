@@ -2,6 +2,8 @@ package routes
 
 import (
 	"backend/src/core"
+	"backend/src/model"
+	"backend/src/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,5 +21,18 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 	})
 	users.GET("/welcome", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Hellow User")
+	})
+
+	// signup api
+	users.POST("/signup", func(ctx *gin.Context) {
+
+		var body model.SignupBody
+		if err := ctx.ShouldBindJSON(&body); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		var result model.Response = service.SingUpService(ctx, body)
+		ctx.JSON(result.Code, result)
 	})
 }

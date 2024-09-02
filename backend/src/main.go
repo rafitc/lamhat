@@ -2,6 +2,7 @@ package main
 
 import (
 	core "backend/src/core"
+	"backend/src/repository"
 	routes "backend/src/routes"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,9 @@ var router = gin.Default()
 var sugar = core.Sugar
 
 func main() {
+	sugar.Info("Creating DB pool")
+	repository.DbPoolMain()
+
 	getRoutes()
 
 	// r.GET("/", func(c *gin.Context) {
@@ -25,6 +29,7 @@ func main() {
 // this way every group of routes can be defined in their own file
 // so this one won't be so messy
 func getRoutes() {
+
 	sugar.Debug("Registering Routes")
 
 	users := router.Group("/users")
@@ -32,7 +37,5 @@ func getRoutes() {
 
 	devices := router.Group("/device")
 	routes.AddDeviceRoutes(devices)
-
-
 
 }

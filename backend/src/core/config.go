@@ -35,19 +35,6 @@ func init() {
 		fmt.Printf("Unable to decode into struct, %v", err)
 	}
 
-	// Reading variables using the model
-	fmt.Println("Reading variables using the model..")
-	fmt.Println("Database is\t", configuration.Database.DATABASE)
-	fmt.Println("Port is\t\t", configuration.Database.PORT)
-	fmt.Println("EXAMPLE_PATH is\t", configuration.EXAMPLE_PATH)
-
-	// Reading variables without using the model
-	fmt.Println("\nReading variables without using the model..")
-	fmt.Println("Database is\t", viper.GetString("database.dbname"))
-	fmt.Println("Port is\t\t", viper.GetInt("server.port"))
-	fmt.Println("EXAMPLE_PATH is\t", viper.GetString("EXAMPLE_PATH"))
-	fmt.Println("EXAMPLE_VAR is\t", viper.GetString("EXAMPLE_VAR"))
-
 	Config = configuration // Save the config into a global var
 
 }
