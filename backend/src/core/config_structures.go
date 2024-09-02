@@ -6,6 +6,7 @@ package core
 type Configurations struct {
 	Database     DatabaseConfigurations
 	EXAMPLE_PATH string
+	OTP          OTP
 }
 
 // DatabaseConfigurations exported
@@ -19,4 +20,8 @@ type DatabaseConfigurations struct {
 	CLIENT_CERT string
 	CLIENT_KEY  string
 	CA_CERT     string
+}
+
+type OTP struct {
+	OTP_LENGTH int
 }
