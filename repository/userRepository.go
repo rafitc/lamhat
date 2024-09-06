@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"backend/src/core"
-	customErrors "backend/src/errors"
-	"backend/src/model"
+	"lamhat/core"
+	customErrors "lamhat/errors"
+	"lamhat/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"

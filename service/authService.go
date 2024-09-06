@@ -1,11 +1,11 @@
 package service
 
 import (
-	"backend/src/core"
-	customErrors "backend/src/errors"
-	"backend/src/model"
-	"backend/src/repository"
-	"backend/src/utils"
+	"lamhat/core"
+	customErrors "lamhat/errors"
+	"lamhat/model"
+	"lamhat/repository"
+	"lamhat/utils"
 
 	"github.com/gin-gonic/gin"
 )
