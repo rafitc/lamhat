@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"backend/src/core"
 	"context"
 	"fmt"
+	"lamhat/core"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"

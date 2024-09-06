@@ -1,4 +1,4 @@
-module backend
+module lamhat
 
 go 1.22.4
 
