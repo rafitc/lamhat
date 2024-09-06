@@ -1,9 +1,9 @@
 package main
 
 import (
-	core "backend/src/core"
-	"backend/src/repository"
-	routes "backend/src/routes"
+	"lamhat/core"
+	"lamhat/repository"
+	"lamhat/routes"
 
 	"github.com/gin-gonic/gin"
 )

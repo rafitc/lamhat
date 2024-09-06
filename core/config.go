@@ -14,7 +14,7 @@ func init() {
 	viper.SetConfigName("config")
 
 	// Set the path to look for the configurations file
-	viper.AddConfigPath("/Users/rafi/Desktop/lamhat/backend/src/config/")
+	viper.AddConfigPath("/Users/rafi/Desktop/lamhat/config/")
 
 	// Enable VIPER to read Environment Variables
 	viper.AutomaticEnv()

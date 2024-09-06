@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"backend/src/core"
-	"backend/src/model"
-	"backend/src/service"
+	"lamhat/core"
+	"lamhat/model"
+	"lamhat/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

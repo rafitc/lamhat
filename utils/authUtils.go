@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"backend/src/core"
-	customErrors "backend/src/errors"
+	"lamhat/core"
+	customErrors "lamhat/errors"
 
 	"github.com/nanorand/nanorand"
 )
