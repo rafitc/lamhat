@@ -20,5 +20,6 @@ type LoginUserDTO struct {
 	Id               int       `json:"id" binding:"required"`
 	Email_id         string    `json:"email_id" binding:"required"`
 	Is_user_active   bool      `json:"is_user_active" binding:"optional"`
+	Otp              string    `json""otp" binding:"optional`
 	Otp_generated_at time.Time `json:"otp_generated_at" binding:"optional"`
 }

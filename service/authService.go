@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+	constants "lamhat/const"
 	"lamhat/core"
 	customErrors "lamhat/errors"
 	"lamhat/model"
@@ -12,9 +14,12 @@ import (
 
 var Sugar_logger = core.Sugar
 
-func SingUpService(ctx *gin.Context, body model.SignupBody) model.Response {
-	var result model.Response
+type LogInResp struct {
+	AuthCode string `json:"authcode" binding:"required"`
+}
 
+func SignUpService(ctx *gin.Context, body model.SignupBody) model.Response {
+	var result model.Response
 	Sugar_logger.Info("Signup Service started with body", body.EmailId)
 
 	// Acquire a connection from the pool
@@ -75,6 +80,15 @@ func SingUpService(ctx *gin.Context, body model.SignupBody) model.Response {
 			return result
 		}
 
+		// Send OTP via email
+
+		otp_subject := constants.SIGNUP_OTP_EMAIL_SUBJECT
+		otp_body := fmt.Sprintf(constants.OTP_EMAIL_BODY, otp)
+		err = utils.TriggerEmail(otp_subject, otp_body, body.EmailId)
+		if err != nil {
+			Sugar_logger.Errorf("Error while sending OTP email for user %s - %s", body.EmailId, err.Error())
+		}
+
 		result.Status = true
 		result.Data = response
 		result.Code = 200
@@ -116,6 +130,83 @@ func SingUpService(ctx *gin.Context, body model.SignupBody) model.Response {
 
 	result.Status = true
 	result.Data = user
+	result.Code = 200
+	result.ErrorMsg = ""
+	return result
+}
+
+func LoginService(ctx *gin.Context, body model.LoginBody) model.Response {
+	var result model.Response
+	Sugar_logger.Infof("Login Service started with body %s", body.EmailId)
+
+	// Fetch OTP and otp creation date
+	// Acquire a connection from the pool
+	connection, err := repository.ConObjOfDB.Acquire(ctx)
+	if err != nil {
+		Sugar_logger.Errorf("Error while acquiring connection from the database pool!! %v", err.Error())
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+	defer connection.Release()
+
+	// Get transaction from connection and use it till the end.
+	// If any err, do rollback else do commit
+	tx, err := connection.Begin(ctx)
+	if err != nil {
+		Sugar_logger.Errorf("Error in DB connection %v", err.Error())
+		defer tx.Rollback(ctx)
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+	// Check whether the user exist in DB or not
+	user, err := repository.FindUserByEmail(ctx, body.EmailId, tx)
+	if err == customErrors.ErrUserNotFound {
+		// Handle the case where no user is found
+		Sugar_logger.Warnf("No user found with email id %s", body.EmailId)
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	Sugar_logger.Debug("Comparing OTP")
+	err = utils.ValidateOTP(user.Otp_generated_at, user.Otp, body.Otp)
+	if err != nil {
+		Sugar_logger.Errorf("Error while validating OTP of user %s", err.Error())
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 402
+		result.ErrorMsg = err.Error()
+		return result
+	}
+	Sugar_logger.Info("OTP validated")
+
+	Sugar_logger.Info("Generating auth token")
+	// Generate Auth Token
+	token, err := utils.GenerateAuthToken(user.Id)
+	if err != nil {
+		result.Status = false
+		result.Data = nil
+		result.Code = 402
+		result.ErrorMsg = err.Error()
+		return result
+	}
+	// Geneate response body
+	authToken := LogInResp{token}
+
+	result.Status = true
+	result.Data = authToken
 	result.Code = 200
 	result.ErrorMsg = ""
 	return result
