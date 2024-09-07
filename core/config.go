@@ -25,9 +25,6 @@ func init() {
 		fmt.Printf("Error reading config file, %s", err)
 	}
 
-	// Set undefined variables
-	viper.SetDefault("database.dbname", "test_db")
-
 	var configuration *Configurations
 
 	err := viper.Unmarshal(&configuration)

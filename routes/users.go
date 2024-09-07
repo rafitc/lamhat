@@ -2,8 +2,7 @@ package routes
 
 import (
 	"lamhat/core"
-	"lamhat/model"
-	"lamhat/service"
+	"lamhat/middlewares"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,26 +12,15 @@ var Sugar_logger = core.Sugar
 
 func AddUserRoutes(rg *gin.RouterGroup) {
 
-	Sugar_logger.Debug("Request received in Users group")
 	users := rg.Group("/")
+	users.Use(middlewares.ValidateAuthToken())
 
 	users.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "users")
+		c.JSON(http.StatusOK, "User Handle")
 	})
-	users.GET("/welcome", func(c *gin.Context) {
+	users.GET("/home", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Hellow User")
 	})
 
 	// signup api
-	users.POST("/signup", func(ctx *gin.Context) {
-
-		var body model.SignupBody
-		if err := ctx.ShouldBindJSON(&body); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		var result model.Response = service.SingUpService(ctx, body)
-		ctx.JSON(result.Code, result)
-	})
 }
