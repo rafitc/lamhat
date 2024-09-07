@@ -14,7 +14,7 @@ I have an old iPad Air 1st Gen that is no longer in use due to the lack of softw
 - **Frontend:** Not yet decided (suggestions are welcome - please create an issue)
 - **Database:** PostgreSQL for data and MinIO for object storage
 
-## System Design 
+## System Design
 
 Read design doc from here [CLICK HERE](docs/README.md)
 
@@ -22,9 +22,9 @@ Read design doc from here [CLICK HERE](docs/README.md)
 
 - [x] High level system design
 - [x] Low level system design
-- [ ] Database setup
+- [x] Database setup
 - [ ] Backend
-  - [ ] Auth
+  - [x] Auth
   - [ ] Admin access and ops
   - [ ] Device management
   - [ ] Image push/pull service

@@ -32,10 +32,12 @@ func getRoutes() {
 
 	sugar.Debug("Registering Routes")
 
+	auth := router.Group("/auth")
+	routes.AddAuthRoutes(auth)
+
 	users := router.Group("/users")
 	routes.AddUserRoutes(users)
 
 	devices := router.Group("/device")
 	routes.AddDeviceRoutes(devices)
-
 }

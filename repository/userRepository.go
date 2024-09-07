@@ -13,13 +13,14 @@ var Sugar_logger = core.Sugar
 
 func FindUserByEmail(ctx *gin.Context, email string, tx pgx.Tx) (model.LoginUserDTO, error) {
 	var user model.LoginUserDTO
-	const query string = "SELECT id, email_id, is_user_active, otp_generated_at FROM app.users WHERE email_id = $1;"
-
+	const query string = "SELECT id, email_id, is_user_active, otp, otp_generated_at FROM app.users WHERE email_id = $1;"
+	Sugar_logger.Infof("Running %s", query)
 	row := tx.QueryRow(ctx, query, email)
 	err := row.Scan(
-		&user.Id,               // Destination for 'id'
-		&user.Email_id,         // Destination for 'email_id'
-		&user.Is_user_active,   // Destination for 'is_user_active'
+		&user.Id,             // Destination for 'id'
+		&user.Email_id,       // Destination for 'email_id'
+		&user.Is_user_active, // Destination for 'is_user_active'
+		&user.Otp,
 		&user.Otp_generated_at, // Destination for 'otp_generated_at'
 	)
 

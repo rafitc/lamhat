@@ -6,3 +6,4 @@ import "errors"
 var ErrUserNotFound = errors.New("user not found")
 var ErrNewUserCreation = errors.New("New User creation failed ")
 var LoginOtpUpdationFailed = errors.New("Error while updating OTP in DB")
+var AuthTokenGenError = errors.New("Error while generating auth token")

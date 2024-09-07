@@ -4,9 +4,10 @@ package core
 
 // Configurations exported
 type Configurations struct {
-	Database     DatabaseConfigurations
-	EXAMPLE_PATH string
-	OTP          OTP
+	Database DatabaseConfigurations
+	OTP      OTP
+	EMAIL    EMAIL
+	JWT      JWT_AUTH
 }
 
 // DatabaseConfigurations exported
@@ -23,5 +24,17 @@ type DatabaseConfigurations struct {
 }
 
 type OTP struct {
-	OTP_LENGTH int
+	OTP_LENGTH           int
+	OTP_VALIDITY_IN_MINS int
+}
+
+type EMAIL struct {
+	MAILGUN_DOMAIN string
+	MAILGUN_API    string
+	MAINGUN_SENDER string
+}
+
+type JWT_AUTH struct {
+	JWT_EXP_IN_HRS int
+	SECRET_KEY     string
 }
