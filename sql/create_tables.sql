@@ -19,8 +19,57 @@ CREATE TABLE app.users (
 CREATE INDEX idx_user_id ON app.users USING btree (id);
 CREATE INDEX idx_users_email_id ON app.users USING btree (email_id);
 CREATE INDEX idx_users_is_user_active ON app.users USING btree (is_user_active);
-
 ALTER TABLE app.users OWNER TO me; -- change owner to superuser
+
+-- Gallery Table 
+CREATE TABLE app.gallery (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  gallery_name TEXT NOT NULL,
+  gallery_status_id INT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  last_updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_user
+    FOREIGN KEY (user_id) REFERENCES app.users(id),
+  CONSTRAINT fk_gallery_status
+    FOREIGN KEY (gallery_status_id) REFERENCES app.gallery_status(id)
+);
+
+-- Indexes for optimized queries
+CREATE INDEX idx_gallery_user_id ON app.gallery(user_id);
+CREATE INDEX idx_gallery_status_id ON app.gallery(gallery_status_id);
+CREATE INDEX idx_gallery_created_at ON app.gallery(created_at);
+ALTER TABLE app.gallery OWNER TO me; -- change owner to superuser
+
+CREATE TABLE app.gallery_status (
+  id SERIAL PRIMARY KEY,
+  status TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  last_updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for optimized queries
+CREATE INDEX idx_gallery_status_status ON app.gallery_status(status);
+CREATE INDEX idx_gallery_status_created_at ON app.gallery_status(created_at);
+ALTER TABLE app.gallery_status OWNER TO me; -- change owner to superuser
+
+-- Files table 
+CREATE TABLE app.gallery_files (
+  id SERIAL PRIMARY KEY,
+  gallery_id INT NOT NULL,
+  file_path TEXT NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  last_updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_gallery
+    FOREIGN KEY (gallery_id) REFERENCES app.gallery(id)
+);
+
+-- Indexes for optimized queries
+CREATE INDEX idx_gallery_files_gallery_id ON app.gallery_files(gallery_id);
+CREATE INDEX idx_gallery_files_is_active ON app.gallery_files(is_active);
+CREATE INDEX idx_gallery_files_created_at ON app.gallery_files(created_at);
+ALTER TABLE app.gallery_files OWNER TO me; -- change owner to superuser
 
 -- Give access to the backend user 
 -- To all tables
