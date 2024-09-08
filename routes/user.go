@@ -12,15 +12,13 @@ var Sugar_logger = core.Sugar
 
 func AddUserRoutes(rg *gin.RouterGroup) {
 
-	users := rg.Group("/")
-	users.Use(middlewares.ValidateAuthToken())
+	user := rg.Group("/")
+	user.Use(middlewares.ValidateAuthToken())
 
-	users.GET("/", func(c *gin.Context) {
+	user.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "User Handle")
 	})
-	users.GET("/home", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "Hellow User")
+	user.GET("/home", func(c *gin.Context) {
+		c.JSON(http.StatusOK, "User Home")
 	})
-
-	// signup api
 }
