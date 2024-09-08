@@ -11,10 +11,10 @@ import (
 func AddAuthRoutes(rg *gin.RouterGroup) {
 
 	Sugar_logger.Debug("Request received in Auth group")
-	users := rg.Group("/")
+	auth := rg.Group("/")
 
 	// signup api
-	users.POST("/signup", func(ctx *gin.Context) {
+	auth.POST("/signup", func(ctx *gin.Context) {
 
 		var body model.SignupBody
 		if err := ctx.ShouldBindJSON(&body); err != nil {
@@ -27,7 +27,7 @@ func AddAuthRoutes(rg *gin.RouterGroup) {
 	})
 
 	// login API
-	users.POST("/login", func(ctx *gin.Context) {
+	auth.POST("/login", func(ctx *gin.Context) {
 		var body model.LoginBody
 		if err := ctx.ShouldBindJSON(&body); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

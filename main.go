@@ -40,4 +40,7 @@ func getRoutes() {
 
 	devices := router.Group("/device")
 	routes.AddDeviceRoutes(devices)
+
+	gallery := router.Group("/gallery")
+	routes.AddGalleryRoutes(gallery)
 }
