@@ -5,20 +5,29 @@ import (
 	"lamhat/model"
 	"lamhat/service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AddGalleryRoutes(rg *gin.RouterGroup) {
 
-	user := rg.Group("/")
-	user.Use(middlewares.ValidateAuthToken())
+	Sugar_logger.Debug("Request received in Gallery group")
+	gallery := rg.Group("/")
+	gallery.Use(middlewares.ValidateAuthToken())
 
-	user.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "Gallery Handle")
+	gallery.GET("/get/", func(ctx *gin.Context) {
+		gallery_id, err := strconv.Atoi(ctx.Query("id"))
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		user_id := ctx.GetInt("userId")
+		var result model.Response = service.FetchGallery(ctx, gallery_id, user_id)
+		ctx.JSON(result.Code, result)
 	})
 
-	user.POST("/create-gallery", func(ctx *gin.Context) {
+	gallery.POST("/create-gallery", func(ctx *gin.Context) {
 		var body model.CreateGallery
 		if err := ctx.ShouldBindBodyWithJSON(&body); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
