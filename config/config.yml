@@ -25,3 +25,10 @@ EMAIL:
   MAILGUN_DOMAIN: "YOUR-DOMAIN-HERE"
   MAILGUN_API: "YOUR-API-KEY"
   MAINGUN_SENDER: "SENDER-ID"
+
+FILE_STORAGE:
+  ENDPOINT: "your-minio-endpoint"
+  ACCESS_KEY_ID: "your-access-key-id"
+  ACCESS_SECRET: "your-secret"
+  SSL: "true"
+  LOCATION: "your-storage-location"
