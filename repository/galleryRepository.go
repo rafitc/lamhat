@@ -9,6 +9,37 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+func GetGalleryDetails(ctx *gin.Context, gallery_id int, user_id int, tx pgx.Tx) (model.GetGallery, error) {
+	var gallery_files model.GetGallery
+	const query = `select gallery_name, gs.status, g.created_at,
+					jsonb_agg(gf.file_path) as files from app.gallery g 
+					join app.gallery_status gs 
+					on g.gallery_status_id = gs.id
+					join app.gallery_files gf 
+					on gf.gallery_id = g.id 
+					where g.user_id = $1 and g.id = $2
+					group by 1,2,3`
+	core.Sugar.Infof("Running %v", query, user_id, gallery_id)
+	row := tx.QueryRow(ctx, query, user_id, gallery_id)
+	err := row.Scan(
+		&gallery_files.GalleryName,
+		&gallery_files.Status,
+		&gallery_files.CreatedAt,
+		&gallery_files.Files,
+	)
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return gallery_files, customErrors.ErrNoGalleryDetailsFound
+		}
+		// Handle other errors
+		Sugar_logger.Errorf("Error querying status table: %v", err)
+		return gallery_files, err
+	}
+
+	return gallery_files, nil
+}
+
 func GetGalleryStatus(ctx *gin.Context, status string, tx pgx.Tx) (model.GalleryStatus, error) {
 	// Look for status
 	var status_id model.GalleryStatus
