@@ -37,4 +37,16 @@ func AddGalleryRoutes(rg *gin.RouterGroup) {
 		var result model.Response = service.CreateGallery(ctx, body)
 		ctx.JSON(result.Code, result)
 	})
+
+	gallery.POST("/upload/", func(ctx *gin.Context) {
+		gallery_id, err := strconv.Atoi(ctx.Query("id"))
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		// Handle Files
+		user_id := ctx.GetInt("userId")
+		var result model.Response = service.UploadIntoGallery(ctx, gallery_id, user_id)
+		ctx.JSON(result.Code, result)
+	})
 }

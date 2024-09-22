@@ -29,7 +29,6 @@ func main() {
 // this way every group of routes can be defined in their own file
 // so this one won't be so messy
 func getRoutes() {
-
 	sugar.Debug("Registering Routes")
 
 	auth := router.Group("/auth")
@@ -42,5 +41,6 @@ func getRoutes() {
 	routes.AddDeviceRoutes(devices)
 
 	gallery := router.Group("/gallery")
+	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 	routes.AddGalleryRoutes(gallery)
 }

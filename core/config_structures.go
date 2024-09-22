@@ -4,10 +4,11 @@ package core
 
 // Configurations exported
 type Configurations struct {
-	Database DatabaseConfigurations
-	OTP      OTP
-	EMAIL    EMAIL
-	JWT      JWT_AUTH
+	Database     DatabaseConfigurations
+	OTP          OTP
+	EMAIL        EMAIL
+	JWT          JWT_AUTH
+	FILE_STORAGE FILE_STORAGE
 }
 
 // DatabaseConfigurations exported
@@ -37,4 +38,12 @@ type EMAIL struct {
 type JWT_AUTH struct {
 	JWT_EXP_IN_HRS int
 	SECRET_KEY     string
+}
+
+type FILE_STORAGE struct {
+	ENDPOINT      string
+	ACCESS_KEY_ID string
+	ACCESS_SECRET string
+	SSL           bool
+	LOCATION      string
 }

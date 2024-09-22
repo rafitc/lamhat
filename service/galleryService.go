@@ -1,8 +1,11 @@
 package service
 
 import (
+	"fmt"
+	"lamhat/core"
 	"lamhat/model"
 	"lamhat/repository"
+	"lamhat/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -118,6 +121,32 @@ func CreateGallery(ctx *gin.Context, body model.CreateGallery) model.Response {
 
 	result.Status = true
 	result.Data = gallery
+	result.Code = 200
+	result.ErrorMsg = ""
+	return result
+}
+
+func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) model.Response {
+	var result model.Response
+
+	Sugar_logger.Infof("Uploading files into gallery %d", gallery_id)
+	data, err := utils.UploadIntoGallery(ctx, gallery_id, user_id)
+
+	if err != nil {
+		result.Status = false
+		result.Data = nil
+		result.Code = 400
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	core.Sugar.Debug("upload done. starting DB update")
+
+	// Create Insert values and then insert into DB
+	fmt.Printf("%v", data) // TODO
+
+	result.Status = true
+	result.Data = nil
 	result.Code = 200
 	result.ErrorMsg = ""
 	return result
