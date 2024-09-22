@@ -1,11 +1,66 @@
 package service
 
 import (
+	"fmt"
+	"lamhat/core"
 	"lamhat/model"
 	"lamhat/repository"
+	"lamhat/utils"
 
 	"github.com/gin-gonic/gin"
 )
+
+func FetchGallery(ctx *gin.Context, gallery_id int, user_id int) model.Response {
+	var result model.Response
+	Sugar_logger.Infof("Fetching gallery details with ID  %d", gallery_id)
+
+	// Acquire a connection from the pool
+	connection, err := repository.ConObjOfDB.Acquire(ctx)
+	if err != nil {
+		Sugar_logger.Errorf("Error while acquiring connection from the database pool!! %v", err.Error())
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+	defer connection.Release()
+
+	// Get transaction from connection and use it till the end.
+	// If any err, do rollback else do commit
+	tx, err := connection.Begin(ctx)
+	if err != nil {
+		Sugar_logger.Errorf("Error in DB connection %v", err.Error())
+		defer tx.Rollback(ctx)
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	// Fetch the whole Gallery data
+	gallery, err := repository.GetGalleryDetails(ctx, gallery_id, user_id, tx)
+	if err != nil {
+		Sugar_logger.Errorf("%v", err.Error())
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 400
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	Sugar_logger.Errorf("Gallery %v", gallery)
+
+	result.Status = true
+	result.Data = gallery
+	result.Code = 200
+	result.ErrorMsg = ""
+	return result
+}
 
 func CreateGallery(ctx *gin.Context, body model.CreateGallery) model.Response {
 	var result model.Response
@@ -66,6 +121,32 @@ func CreateGallery(ctx *gin.Context, body model.CreateGallery) model.Response {
 
 	result.Status = true
 	result.Data = gallery
+	result.Code = 200
+	result.ErrorMsg = ""
+	return result
+}
+
+func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) model.Response {
+	var result model.Response
+
+	Sugar_logger.Infof("Uploading files into gallery %d", gallery_id)
+	data, err := utils.UploadIntoGallery(ctx, gallery_id, user_id)
+
+	if err != nil {
+		result.Status = false
+		result.Data = nil
+		result.Code = 400
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	core.Sugar.Debug("upload done. starting DB update")
+
+	// Create Insert values and then insert into DB
+	fmt.Printf("%v", data) // TODO
+
+	result.Status = true
+	result.Data = nil
 	result.Code = 200
 	result.ErrorMsg = ""
 	return result
