@@ -4,6 +4,7 @@ import (
 	"lamhat/core"
 	customErrors "lamhat/errors"
 	"lamhat/model"
+	"lamhat/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
@@ -83,4 +84,25 @@ func CreateGallery(ctx *gin.Context, gallery model.CreateGallery, tx pgx.Tx) (mo
 		return gallery_model, err
 	}
 	return gallery_model, nil
+}
+
+func InsertFileInfo(ctx *gin.Context, upload_status []utils.UploadStatus, tx pgx.Tx) error {
+
+	var uploadFiles [][]interface{}
+	for _, each := range upload_status {
+		uploadFiles = append(uploadFiles, []interface{}{each.Gallery_id, each.Objectname, each.Status, each.Bucketname})
+	}
+
+	copyCount, err := tx.CopyFrom(ctx,
+		pgx.Identifier{"app", "gallery_files"},
+		[]string{"gallery_id", "file_path", "is_active", "bucket_name"},
+		pgx.CopyFromRows(uploadFiles))
+
+	if err != nil {
+		return err
+	}
+	core.Sugar.Infof("Inserted Row of %d count", copyCount)
+
+	return err
+
 }
