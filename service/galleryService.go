@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"lamhat/core"
 	"lamhat/model"
 	"lamhat/repository"
@@ -141,9 +140,45 @@ func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) model.Resp
 	}
 
 	core.Sugar.Debug("upload done. starting DB update")
+	// Acquire a connection from the pool
+	connection, err := repository.ConObjOfDB.Acquire(ctx)
+	if err != nil {
+		Sugar_logger.Errorf("Error while acquiring connection from the database pool!! %v", err.Error())
 
-	// Create Insert values and then insert into DB
-	fmt.Printf("%v", data) // TODO
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+	defer connection.Release()
+
+	// Get transaction from connection and use it till the end.
+	// If any err, do rollback else do commit
+	tx, err := connection.Begin(ctx)
+	if err != nil {
+		Sugar_logger.Errorf("Error in DB connection %v", err.Error())
+		defer tx.Rollback(ctx)
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	err = repository.InsertFileInfo(ctx, data, tx)
+
+	if err != nil {
+		core.Sugar.Infof("Error while updating files")
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 402
+		result.ErrorMsg = err.Error()
+		return result
+	}
+	tx.Commit(ctx)
 
 	result.Status = true
 	result.Data = nil

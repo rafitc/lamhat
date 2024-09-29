@@ -14,7 +14,7 @@ import (
 )
 
 // Connect to a minIo server
-func connectToMinIo(ctx *gin.Context) *minio.Client {
+func connectToMinIo() *minio.Client {
 	endpoint := core.Config.FILE_STORAGE.ENDPOINT
 	accessKeyID := core.Config.FILE_STORAGE.ACCESS_KEY_ID
 	secretAccessKey := core.Config.FILE_STORAGE.ACCESS_SECRET
@@ -35,13 +35,14 @@ func connectToMinIo(ctx *gin.Context) *minio.Client {
 
 // Define the struct with exported fields
 type UploadStatus struct {
-	bucketname string
-	objectname string
-	status     bool
+	Bucketname string
+	Objectname string
+	Status     bool
+	Gallery_id int
 }
 
 func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) ([]UploadStatus, error) {
-	client := connectToMinIo(ctx)
+	client := connectToMinIo()
 	// user-id + gallery-id will be the bucket name, Create the bucket if its not exist
 	// Check the bucket exist
 	var bucket_name string = fmt.Sprintf("gallery-bucket-%v-%v", gallery_id, user_id)
@@ -80,7 +81,7 @@ func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) ([]UploadS
 	for _, file := range files {
 		// Upload into bucket
 		wg.Add(1)
-		go putImageInBucket(ctx, bucket_name, file, client, ch, &wg)
+		go putImageInBucket(ctx, bucket_name, gallery_id, file, client, ch, &wg)
 	}
 	// wait for the goroutines
 	wg.Wait()
@@ -97,18 +98,19 @@ func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) ([]UploadS
 	return statusStruct, nil
 }
 
-func putImageInBucket(ctx *gin.Context, bucket_name string, file *multipart.FileHeader, client *minio.Client, ch chan UploadStatus, wg *sync.WaitGroup) {
+func putImageInBucket(ctx *gin.Context, bucket_name string, gallery_id int, file *multipart.FileHeader, client *minio.Client, ch chan UploadStatus, wg *sync.WaitGroup) {
 
 	var upload_status UploadStatus // struct to store upload status
 
 	object_name := fmt.Sprintf("%s-%s", uuid.NewString(), file.Filename) // uuid + file name (to makesure file name is unique)
-	upload_status.bucketname = bucket_name
-	upload_status.objectname = object_name
+	upload_status.Bucketname = bucket_name
+	upload_status.Objectname = object_name
+	upload_status.Gallery_id = gallery_id
 
 	// open file
 	reader, err := file.Open()
 	if err != nil {
-		upload_status.status = false // failed
+		upload_status.Status = false // failed
 		ch <- upload_status
 		defer wg.Done()
 		core.Sugar.Errorf("Error in file %s", file.Filename)
@@ -118,12 +120,12 @@ func putImageInBucket(ctx *gin.Context, bucket_name string, file *multipart.File
 	n, err := client.PutObject(ctx, bucket_name, object_name, reader, file.Size, minio.PutObjectOptions{ContentType: "application/image"})
 
 	if err != nil {
-		upload_status.status = false // failed
+		upload_status.Status = false // failed
 		ch <- upload_status
 		defer wg.Done()
 	}
 	fmt.Printf("upaload status %v", n)
-	upload_status.status = true // success
+	upload_status.Status = true // success
 	ch <- upload_status
 	defer wg.Done()
 }
