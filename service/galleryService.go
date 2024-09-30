@@ -186,3 +186,62 @@ func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) model.Resp
 	result.ErrorMsg = ""
 	return result
 }
+
+func PublishGallery(ctx *gin.Context, user_id int, gallery_status model.PublishGallery) model.Response {
+	var result model.Response
+
+	Sugar_logger.Infof("Publising gallery %d", gallery_status.GalleryId)
+
+	// Acquire a connection from the pool
+	connection, err := repository.ConObjOfDB.Acquire(ctx)
+	if err != nil {
+		Sugar_logger.Errorf("Error while acquiring connection from the database pool!! %v", err.Error())
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+	defer connection.Release()
+
+	// Get transaction from connection and use it till the end.
+	// If any err, do rollback else do commit
+	tx, err := connection.Begin(ctx)
+	if err != nil {
+		Sugar_logger.Errorf("Error in DB connection %v", err.Error())
+		defer tx.Rollback(ctx)
+
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	status, err := repository.GetGalleryStatus(ctx, gallery_status.Status, tx)
+
+	if err != nil {
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	err = repository.Publish(ctx, gallery_status.GalleryId, status.Id, tx)
+	if err != nil {
+		result.Status = false
+		result.Data = nil
+		result.Code = 500
+		result.ErrorMsg = err.Error()
+		return result
+	}
+
+	result.Status = true
+	result.Data = nil
+	result.Code = 200
+	result.ErrorMsg = ""
+	return result
+
+}

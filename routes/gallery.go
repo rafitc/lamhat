@@ -49,4 +49,16 @@ func AddGalleryRoutes(rg *gin.RouterGroup) {
 		var result model.Response = service.UploadIntoGallery(ctx, gallery_id, user_id)
 		ctx.JSON(result.Code, result)
 	})
+
+	gallery.POST("/change-status", func(ctx *gin.Context) {
+		var body model.PublishGallery
+
+		if err := ctx.ShouldBindBodyWithJSON(&body); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		user_id := ctx.GetInt("userId")
+		var result model.Response = service.PublishGallery(ctx, user_id, body)
+		ctx.JSON(result.Code, result)
+	})
 }
