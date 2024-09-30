@@ -26,3 +26,8 @@ type GetGallery struct {
 	CreatedAt   time.Time `json:"created_at"`
 	Files       []string  `json:"files"`
 }
+
+type PublishGallery struct {
+	GalleryId int    `json:"gallery_id" binding:"required`
+	Status    string `json:"status" binding:"required`
+}
