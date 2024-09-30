@@ -106,3 +106,20 @@ func InsertFileInfo(ctx *gin.Context, upload_status []utils.UploadStatus, tx pgx
 	return err
 
 }
+
+func Publish(ctx *gin.Context, gallery_id int, status_id int, tx pgx.Tx) error {
+	const query string = "UPDATE app.gallery SET gallery_status_id = $1 WHERE id = $2"
+	core.Sugar.Infof("Running %s", query)
+
+	_, err := tx.Exec(ctx, query, status_id, gallery_id)
+
+	if err != nil {
+		return err
+	}
+	err = tx.Commit(ctx)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
