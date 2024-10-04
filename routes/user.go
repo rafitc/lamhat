@@ -18,6 +18,7 @@ func AddUserRoutes(rg *gin.RouterGroup) {
 	user.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "User Handle")
 	})
+
 	user.GET("/home", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "User Home")
 	})

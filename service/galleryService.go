@@ -52,10 +52,30 @@ func FetchGallery(ctx *gin.Context, gallery_id int, user_id int) model.Response 
 		return result
 	}
 
-	Sugar_logger.Errorf("Gallery %v", gallery)
+	Sugar_logger.Info("Fetched gallery details")
+
+	var data []utils.UploadStatus
+
+	for _, each := range gallery.File {
+		var each_data utils.UploadStatus
+		each_data.Bucketname = each.Bucket_name
+		each_data.Gallery_id = gallery_id
+		each_data.Status = true
+		each_data.Objectname = each.File_path
+		data = append(data, each_data)
+	}
+	// Now generate presigned URLS
+	urlList := utils.GetPreSignedURL(ctx, data)
+	var gallery_details model.GalleryDetails
+	gallery_details.GalleryName = gallery.GalleryName
+	gallery_details.Status = gallery.Status
+	gallery_details.CreatedAt = gallery.CreatedAt
+	for _, each := range urlList {
+		gallery_details.FilePaths = append(gallery_details.FilePaths, each.URL)
+	}
 
 	result.Status = true
-	result.Data = gallery
+	result.Data = gallery_details
 	result.Code = 200
 	result.ErrorMsg = ""
 	return result
@@ -180,8 +200,13 @@ func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) model.Resp
 	}
 	tx.Commit(ctx)
 
+	// Now generate the preSigned URLs and send to client.
+	// so, In front-end client can see the uploaded photos
+
+	urlList := utils.GetPreSignedURL(ctx, data)
+
 	result.Status = true
-	result.Data = nil
+	result.Data = urlList
 	result.Code = 200
 	result.ErrorMsg = ""
 	return result

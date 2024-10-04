@@ -3,9 +3,12 @@ package utils
 import (
 	"fmt"
 	"lamhat/core"
+	"lamhat/model"
 	"log"
 	"mime/multipart"
+	"net/url"
 	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -13,13 +16,21 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
+// Define the struct with exported fields
+type UploadStatus struct {
+	Bucketname string
+	Objectname string
+	Status     bool
+	Gallery_id int
+}
+
 // Connect to a minIo server
 func connectToMinIo() *minio.Client {
 	endpoint := core.Config.FILE_STORAGE.ENDPOINT
 	accessKeyID := core.Config.FILE_STORAGE.ACCESS_KEY_ID
 	secretAccessKey := core.Config.FILE_STORAGE.ACCESS_SECRET
 	useSSL := core.Config.FILE_STORAGE.SSL
-	core.Sugar.Debugf("%s-%s-%s-%s", endpoint, accessKeyID, secretAccessKey, useSSL)
+
 	// Initialize minio client object.
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
@@ -31,14 +42,6 @@ func connectToMinIo() *minio.Client {
 
 	core.Sugar.Debug("MinIo client created")
 	return minioClient
-}
-
-// Define the struct with exported fields
-type UploadStatus struct {
-	Bucketname string
-	Objectname string
-	Status     bool
-	Gallery_id int
 }
 
 func UploadIntoGallery(ctx *gin.Context, gallery_id int, user_id int) ([]UploadStatus, error) {
@@ -128,4 +131,32 @@ func putImageInBucket(ctx *gin.Context, bucket_name string, gallery_id int, file
 	upload_status.Status = true // success
 	ch <- upload_status
 	defer wg.Done()
+}
+
+func GetPreSignedURL(ctx *gin.Context, data []UploadStatus) []model.PreSignedURLS {
+	client := connectToMinIo()
+
+	// Set request parameters for content-disposition.
+	reqParams := make(url.Values)
+
+	var allUrl []model.PreSignedURLS
+
+	for _, each := range data {
+
+		reqParams.Set("response-content-disposition", fmt.Sprintf("attachment; filename=\"%s\"", each.Objectname))
+
+		url, err := client.PresignedGetObject(ctx,
+			each.Bucketname, each.Objectname,
+			time.Duration(core.Config.FILE_STORAGE.PRESIGNED_DELAY_MNT*int(time.Second)),
+			reqParams)
+
+		if err != nil {
+			core.Sugar.Errorf("Error while retrieving preSigned URL %s", err.Error())
+			continue // Dont append if its error
+		}
+
+		allUrl = append(allUrl, model.PreSignedURLS{URL: url.String()})
+	}
+	return allUrl
+
 }

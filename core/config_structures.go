@@ -41,9 +41,10 @@ type JWT_AUTH struct {
 }
 
 type FILE_STORAGE struct {
-	ENDPOINT      string
-	ACCESS_KEY_ID string
-	ACCESS_SECRET string
-	SSL           bool
-	LOCATION      string
+	ENDPOINT            string
+	ACCESS_KEY_ID       string
+	ACCESS_SECRET       string
+	SSL                 bool
+	LOCATION            string
+	PRESIGNED_DELAY_MNT int
 }
