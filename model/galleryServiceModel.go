@@ -24,10 +24,22 @@ type GetGallery struct {
 	GalleryName string    `json:"gallery_name"`
 	Status      string    `json:"status"`
 	CreatedAt   time.Time `json:"created_at"`
-	Files       []string  `json:"files"`
+	File        []Files   `json:"files"`
 }
 
 type PublishGallery struct {
-	GalleryId int    `json:"gallery_id" binding:"required`
-	Status    string `json:"status" binding:"required`
+	GalleryId int    `json:"gallery_id"`
+	Status    string `json:"status"`
+}
+
+type Files struct {
+	File_path   string `json:"file_path"`
+	Bucket_name string `json:"bucket_name"`
+}
+
+type GalleryDetails struct {
+	GalleryName string
+	Status      string
+	CreatedAt   time.Time
+	FilePaths   []string
 }

@@ -14,6 +14,7 @@ func AddDeviceRoutes(rg *gin.RouterGroup) {
 	users.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "device")
 	})
+
 	users.GET("/welcome", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Hellow Device welcome")
 	})

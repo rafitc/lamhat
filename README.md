@@ -23,11 +23,11 @@ Read design doc from here [CLICK HERE](docs/README.md)
 - [x] High level system design
 - [x] Low level system design
 - [x] Database setup
-- [ ] Backend
+- [x] Backend
   - [x] Auth
-  - [ ] Admin access and ops
+  - [x] Admin access and ops
   - [ ] Device management
-  - [ ] Image push/pull service
+  - [x] Image push/pull service
 - [ ] Front-end
   - [ ] Device View
   - [ ] Slideshow View

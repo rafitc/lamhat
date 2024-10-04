@@ -13,7 +13,8 @@ import (
 func GetGalleryDetails(ctx *gin.Context, gallery_id int, user_id int, tx pgx.Tx) (model.GetGallery, error) {
 	var gallery_files model.GetGallery
 	const query = `select gallery_name, gs.status, g.created_at,
-					jsonb_agg(gf.file_path) as files from app.gallery g 
+					jsonb_agg(jsonb_build_object('file_path', gf.file_path, 'bucket_name', gf.bucket_name)) as files
+					from app.gallery g 
 					join app.gallery_status gs 
 					on g.gallery_status_id = gs.id
 					join app.gallery_files gf 
@@ -26,7 +27,7 @@ func GetGalleryDetails(ctx *gin.Context, gallery_id int, user_id int, tx pgx.Tx)
 		&gallery_files.GalleryName,
 		&gallery_files.Status,
 		&gallery_files.CreatedAt,
-		&gallery_files.Files,
+		&gallery_files.File,
 	)
 
 	if err != nil {
